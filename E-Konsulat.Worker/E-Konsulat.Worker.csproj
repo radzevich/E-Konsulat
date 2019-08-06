@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp2.2</TargetFramework>
+		<RootNamespace>E_Konsulat.Worker</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\E-Konsulat.Application\E-Konsulat.Application.csproj" />
+	  <ProjectReference Include="..\E-Konsulat.Infrastructure\E-Konsulat.Infrastructure.csproj" />
+	</ItemGroup>
+
+</Project>
