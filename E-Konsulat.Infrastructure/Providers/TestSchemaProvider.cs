@@ -19,31 +19,31 @@ namespace E_Konsulat.Infrastructure.Providers
                     {
                         DomainKey = "Nazwisko",
                         Selector = "cp_f_daneOs_txtNazwisko",
-                        NodeType = NodeTypes.Text
+                        FacetType = FacetTypes.Text
                     },
                     new Facet
                     {
                         DomainKey = "NazwiskoRodowe",
                         Selector = "cp_f_daneOs_txtNazwiskoRodowe",
-                        NodeType = NodeTypes.Text
+                        FacetType = FacetTypes.Text
                     },
                     new Facet
                     {
                         DomainKey = "Imiona",
                         Selector = "cp_f_daneOs_txtImiona",
-                        NodeType = NodeTypes.Text
+                        FacetType = FacetTypes.Text
                     },
                     new Facet
                     {
                         DomainKey = "DataUrodzin",
                         Selector = "cp_f_daneOs_txtDataUrodzin",
-                        NodeType = NodeTypes.Text
+                        FacetType = FacetTypes.Text
                     },
                     new Facet
                     {
                         DomainKey = "MiejsceUrodzenia",
                         Selector = "cp_f_daneOs_txtMiejsceUrodzenia",
-                        NodeType = NodeTypes.Text
+                        FacetType = FacetTypes.Text
                     }
                 }
             });

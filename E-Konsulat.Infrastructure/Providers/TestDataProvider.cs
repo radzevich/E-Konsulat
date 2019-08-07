@@ -11,7 +11,7 @@ namespace E_Konsulat.Infrastructure.Providers
         {
             return await Task.FromResult(new FormData
             {
-                Fields = new Dictionary<string, string>
+                Fields = new Dictionary<string, object>
                 {
                     {"Nazwisko", "Nazwisko"},
                     {"NazwiskoRodowe", "NazwiskoRodowe"},

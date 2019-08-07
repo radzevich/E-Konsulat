@@ -1,6 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using E_Konsulat.Domain;
+﻿using System.Threading.Tasks;
+using E_Konsulat.Application.Factories;
+using E_Konsulat.Application.Providers.Interfaces;
+using E_Konsulat.Domain.Exceptions;
 using E_Konsulat.Domain.Models.Form;
 using E_Konsulat.Domain.Providers;
 using OpenQA.Selenium.Chrome;
@@ -9,37 +10,27 @@ namespace E_Konsulat.Application.Helpers
 {
     public class FormMapper
     {
+        private readonly IChromeDriverProvider _driverProvider;
         private readonly IFormSchemaProvider _schemaProvider;
         private readonly IFormDataProvider _dataProvider;
 
         public FormMapper(
+            IChromeDriverProvider driverProvider,
             IFormSchemaProvider schemaProvider,
             IFormDataProvider dataProvider)
         {
+            _driverProvider = driverProvider;
             _schemaProvider = schemaProvider;
             _dataProvider = dataProvider;
         }
 
         public async Task Map()
         {
-            var driver = GetDriver();
-
+            var driver = _driverProvider.GetDriver();
             var schema = await _schemaProvider.LoadSchemaAsync("sdf");
             var data = await _dataProvider.LoadFormDataAsync(schema.Id);
 
             WalkFormSchema(driver, schema, data);
-        }
-
-        private static ChromeDriver GetDriver()
-        {
-            var chromeOptions = new ChromeOptions
-            {
-                DebuggerAddress = "localhost:9014"
-            };
-
-            var driver = new ChromeDriver("D:\\Projects\\E-Konsulat\\Libs", chromeOptions);
-
-            return driver;
         }
 
         private static void WalkFormSchema(ChromeDriver driver, FormNode node, FormData data)
@@ -49,62 +40,33 @@ namespace E_Konsulat.Application.Helpers
                 return;
             }
 
-            switch (node.NodeType)
-            {
-                case NodeTypes.Text:
-                    ProcessTextNode(driver, node, data);
-                    break;
-                case NodeTypes.Aggregation:
-                    break;
-                case NodeTypes.Select:
-                    break;
-                case NodeTypes.MultiSelect:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            if (node.ChildNodes == null)
-            {
-                return;
-            }
-
-            foreach (var childNode in node.ChildNodes)
-            {
-                WalkFormSchema(driver, childNode, data);
-            }
-        }
-
-        private void ProcessAggregationNode(ChromeDriver driver, FormNode node, FormData data)
-        {
-            if (node.ChildNodes == null)
-            {
-                return;
-            }
-
-            foreach (var childNode in node.ChildNodes)
-            {
-                WalkFormSchema(driver, childNode, data);
-            }
-        }
-
-        private static void ProcessTextNode(ChromeDriver driver, FormNode node, FormData data)
-        {
             if (node is Facet facet)
             {
-                var input = driver.FindElementById(facet.Selector);
-                if (input == null)
-                {
-                    throw new Exception($"Element with id {facet.Selector} not found");
-                }
+                var facetMapper = FacetMapperFactory.GetFacetMapper(driver, facet.FacetType);
+                var inputValue = GetInputValue(data, facet.DomainKey);
 
-                if (!data.Fields.TryGetValue(facet.DomainKey, out var inputValue))
-                {
-                    throw new Exception($"Data for input {facet.DomainKey} not found");
-                }
-
-                input.SendKeys(inputValue);
+                facetMapper.SetFacetValue(facet, inputValue);
             }
+
+            if (node.ChildNodes == null)
+            {
+                return;
+            }
+
+            foreach (var childNode in node.ChildNodes)
+            {
+                WalkFormSchema(driver, childNode, data);
+            }
+        }
+
+        private static object GetInputValue(FormData data, string key)
+        {
+            if (!data.Fields.TryGetValue(key, out var inputValue))
+            {
+                throw new FormMappingException($"Data for input {key} not found");
+            }
+
+            return inputValue;
         }
     }
 }

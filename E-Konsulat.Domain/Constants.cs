@@ -1,16 +1,11 @@
 ﻿namespace E_Konsulat.Domain
 {
-    public enum SelectorType
-    {
-        Id,
-        Class
-    }
-
-    public enum NodeTypes
+    public enum FacetTypes
     {
         Aggregation,
-        Select,
-        MultiSelect,
+        RadioButton,
+        CheckBox,
+        Dropdown,
         Text
     }
 }
